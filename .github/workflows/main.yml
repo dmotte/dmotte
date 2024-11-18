@@ -17,4 +17,4 @@ jobs:
       script: >
         MISC_SCRIPTS_DIR="$GITHUB_ACTION_PATH/../../scripts"
         bash cicd.sh dmotte repos badges README.md
-          '**Quick access** to the list of all my projects.'
+        '**Quick access** to the list of all my projects.'
