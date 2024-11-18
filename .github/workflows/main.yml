@@ -16,4 +16,5 @@ jobs:
     with:
       script: > # TODO enable this by removing "echo" from the command
         echo MISC_SCRIPTS_DIR="$GITHUB_ACTION_PATH/../../scripts"
-        bash cicd.sh
+        bash cicd.sh dmotte repos badges README.md
+          '**Quick access** to the list of all my projects.'

@@ -7,19 +7,25 @@ set -e
 
 cd "$(dirname "$0")"
 
-repos=$(bash "$MISC_SCRIPTS_DIR/github-get-all-repos.sh" users/dmotte \
+readonly username=${1:?} repos_dir=${2:?} badges_dir=${3:?} readme_file=${4:?}
+readonly description=${5:-}
+
+repos=$(bash "$MISC_SCRIPTS_DIR/github-get-all-repos.sh" "users/$username" \
     '.archived == false and .fork == false')
-repos=$(echo "$repos" | tr -d '\r')
+repos=$(echo "$repos" | tr -d '\r' |
+    while read -r i; do echo "${i#"$username/"}"; done)
 
-# mkdir repos
+if [ ! -e "$repos_dir" ]; then
+    mkdir "$repos_dir"
 
-# (
-#     cd repos
+    (
+        cd "$repos_dir"
 
-#     echo "$repos" | while read -r i; do
-#         git clone --depth=1 "https://github.com/$i.git"
-#     done
-# )
+        echo "$repos" | while read -r i; do
+            git clone --depth=1 "https://github.com/$username/$i.git"
+        done
+    )
+fi
 
 repos_docker=()
 repos_python=()
@@ -28,55 +34,63 @@ repos_vagrant=()
 repos_others=()
 
 for i in $(echo "$repos" | xargs); do
-    name=$(basename "$i")
+    if [ -e "$repos_dir/$i/build/Dockerfile" ]; then
+        repos_docker+=("$i")
+        emoji='&#x1F40B;'
+    elif [ -e "$repos_dir/$i/setup.py" ]; then
+        repos_python+=("$i")
+        emoji='&#x1F40D;'
+    elif [ -e "$repos_dir/$i/Cargo.toml" ]; then
+        repos_rust+=("$i")
+        emoji='&#x1F980;'
+    elif [ -e "$repos_dir/$i/Vagrantfile" ]; then
+        repos_vagrant+=("$i")
+        emoji='&#x1F4E6;'
+    else
+        repos_others+=("$i")
+        emoji='&#x1F4C1;'
+    fi
 
-    [ -e "repos/$name/build/Dockerfile" ] && { repos_docker+=("$name"); continue; }
-    [ -e "repos/$name/setup.py" ] && { repos_python+=("$name"); continue; }
-    [ -e "repos/$name/Cargo.toml" ] && { repos_rust+=("$name"); continue; }
-    [ -e "repos/$name/Vagrantfile" ] && { repos_vagrant+=("$name"); continue; }
-
-    repos_others+=("$name")
+    "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" > "$badges_dir/$i.svg"
 done
 
-mkdir -p badges # TODO remove "-p"
-
 {
-    echo '# Title here'
+    echo "# $username"
     echo
+    [ -n "$description" ] && { echo "$description"; echo; }
     echo '### Docker'
     echo
     for i in "${repos_docker[@]}"; do
-        "$MISC_SCRIPTS_DIR/generate-badge.sh" '&#x1F40B;' "$i" > "badges/$i.svg"
-        echo -n "![$i](badges/$i.svg) &nbsp; "
-    done; echo
+        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
+    done | xargs | sed 's/ / \&nbsp; /g'
     echo
     echo '### Python'
     echo
     for i in "${repos_python[@]}"; do
-        "$MISC_SCRIPTS_DIR/generate-badge.sh" '&#x1F40D;' "$i" > "badges/$i.svg"
-        echo -n "![$i](badges/$i.svg) &nbsp; "
-    done; echo
+        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
+    done | xargs | sed 's/ / \&nbsp; /g'
     echo
     echo '### Rust'
     echo
     for i in "${repos_rust[@]}"; do
-        "$MISC_SCRIPTS_DIR/generate-badge.sh" '&#x1F980;' "$i" > "badges/$i.svg"
-        echo -n "![$i](badges/$i.svg) &nbsp; "
-    done; echo
+        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
+    done | xargs | sed 's/ / \&nbsp; /g'
     echo
     echo '### Vagrant'
     echo
     for i in "${repos_vagrant[@]}"; do
-        "$MISC_SCRIPTS_DIR/generate-badge.sh" '&#x1F4E6;' "$i" > "badges/$i.svg"
-        echo -n "![$i](badges/$i.svg) &nbsp; "
-    done; echo
+        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
+    done | xargs | sed 's/ / \&nbsp; /g'
     echo
     echo '### Others'
     echo
     for i in "${repos_others[@]}"; do
-        "$MISC_SCRIPTS_DIR/generate-badge.sh" '&#x1F4C1;' "$i" > "badges/$i.svg"
-        echo -n "![$i](badges/$i.svg) &nbsp; "
-    done; echo
-} > README.md
+        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
+    done | xargs | sed 's/ / \&nbsp; /g'
+} | tee "$readme_file"
 
-# TODO add links to the images in the README
+[ -z "$(git status -s)" ] || {
+    echo 'There are some uncommitted changes' >&2
+    git diff
+    exit 1
+}
