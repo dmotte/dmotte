@@ -51,14 +51,14 @@ for i in $(echo "$repos" | xargs); do
         emoji='&#x1F4C1;'
     fi
 
-    bash "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" 'fff' '0003' \
+    bash "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" \
         > "$badges_dir/$i.svg"
 done
 
 generate_badges() {
     cat | while read -r i; do
         echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
+    done | xargs | sed 's/ / /g'
 }
 
 {
