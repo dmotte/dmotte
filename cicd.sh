@@ -57,7 +57,6 @@ done
 
 generate_badges() {
     cat | while read -r i; do
-        [ -n "$i" ] || continue
         echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
     done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
 }
@@ -68,23 +67,23 @@ generate_badges() {
     [ -n "$description" ] && { echo "$description"; echo; }
     echo '### Docker'
     echo
-    echo "$repos_docker" | generate_badges
+    echo -n "$repos_docker" | generate_badges
     echo
     echo '### Python'
     echo
-    echo "$repos_python" | generate_badges
+    echo -n "$repos_python" | generate_badges
     echo
     echo '### Rust'
     echo
-    echo "$repos_rust" | generate_badges
+    echo -n "$repos_rust" | generate_badges
     echo
     echo '### Vagrant'
     echo
-    echo "$repos_vagrant" | generate_badges
+    echo -n "$repos_vagrant" | generate_badges
     echo
     echo '### Others'
     echo
-    echo "$repos_others" | generate_badges
+    echo -n "$repos_others" | generate_badges
 } | tee "$readme_file"
 
 [ -z "$(git status -s)" ] || {
