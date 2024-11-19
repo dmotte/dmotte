@@ -59,12 +59,12 @@ done
 
 generate_badges() {
     while read -r i; do
-        echo -n '<a href="https://github.com/'"$username"'/'"$i"'">'
+        echo -n '<a href="'"https://github.com/$username/$i"'">'
 
         echo -n '<picture>'
-        echo -n '<source media="(prefers-color-scheme: dark)" srcset="'"$badges_dir"'/dark-'"$i"'.svg">'
-        echo -n '<source media="(prefers-color-scheme: light)" srcset="'"$badges_dir"'/light-'"$i"'.svg">'
-        echo -n '<img alt="'"$i"'" src="'"$badges_dir"'/light-'"$i"'.svg">'
+        echo -n '<source media="(prefers-color-scheme: dark)" srcset="'"$badges_dir/dark-$i.svg"'">'
+        echo -n '<source media="(prefers-color-scheme: light)" srcset="'"$badges_dir/light-$i.svg"'">'
+        echo -n '<img alt="'"$i"'" src="'"$badges_dir/light-$i.svg"'">'
         echo -n '</picture>'
 
         echo -n '</a>'
