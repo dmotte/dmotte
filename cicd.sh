@@ -27,27 +27,27 @@ if [ ! -e "$repos_dir" ]; then
     )
 fi
 
-repos_docker=()
-repos_python=()
-repos_rust=()
-repos_vagrant=()
-repos_others=()
+repos_docker=
+repos_python=
+repos_rust=
+repos_vagrant=
+repos_others=
 
 for i in $(echo "$repos" | xargs); do
     if [ -e "$repos_dir/$i/build/Dockerfile" ]; then
-        repos_docker+=("$i")
+        repos_docker+="$i"$'\n'
         emoji='&#x1F40B;'
     elif [ -e "$repos_dir/$i/setup.py" ]; then
-        repos_python+=("$i")
+        repos_python+="$i"$'\n'
         emoji='&#x1F40D;'
     elif [ -e "$repos_dir/$i/Cargo.toml" ]; then
-        repos_rust+=("$i")
+        repos_rust+="$i"$'\n'
         emoji='&#x1F980;'
     elif [ -e "$repos_dir/$i/Vagrantfile" ]; then
-        repos_vagrant+=("$i")
+        repos_vagrant+="$i"$'\n'
         emoji='&#x1F4E6;'
     else
-        repos_others+=("$i")
+        repos_others+="$i"$'\n'
         emoji='&#x1F4C1;'
     fi
 
@@ -55,39 +55,36 @@ for i in $(echo "$repos" | xargs); do
         > "$badges_dir/$i.svg"
 done
 
+generate_badges() {
+    cat | while read -r i; do
+        [ -n "$i" ] || continue
+        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
+    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
+}
+
 {
     echo "# $username"
     echo
     [ -n "$description" ] && { echo "$description"; echo; }
     echo '### Docker'
     echo
-    for i in "${repos_docker[@]}"; do
-        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
+    echo "$repos_docker" | generate_badges
     echo
     echo '### Python'
     echo
-    for i in "${repos_python[@]}"; do
-        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
+    echo "$repos_python" | generate_badges
     echo
     echo '### Rust'
     echo
-    for i in "${repos_rust[@]}"; do
-        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
+    echo "$repos_rust" | generate_badges
     echo
     echo '### Vagrant'
     echo
-    for i in "${repos_vagrant[@]}"; do
-        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
+    echo "$repos_vagrant" | generate_badges
     echo
     echo '### Others'
     echo
-    for i in "${repos_others[@]}"; do
-        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
+    echo "$repos_others" | generate_badges
 } | tee "$readme_file"
 
 [ -z "$(git status -s)" ] || {
