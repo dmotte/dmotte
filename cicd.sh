@@ -51,14 +51,28 @@ for i in $(echo "$repos" | xargs); do
         emoji='&#x1F4C1;'
     fi
 
-    bash "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" \
-        > "$badges_dir/$i.svg"
+    bash "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" 1f2328 \
+        > "$badges_dir/light-$i.svg"
+    bash "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" f0f6fc \
+        > "$badges_dir/dark-$i.svg"
 done
 
 generate_badges() {
-    cat | while read -r i; do
-        echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ / /g'
+    while read -r i; do
+        echo -n '<a href="https://github.com/'"$username"'/'"$i"'">'
+
+        echo -n '<picture>'
+        echo -n '<source media="(prefers-color-scheme: dark)" srcset="'"$badges_dir"'/dark-'"$i"'.svg">'
+        echo -n '<source media="(prefers-color-scheme: light)" srcset="'"$badges_dir"'/light-'"$i"'.svg">'
+        echo -n '<img alt="'"$i"'" src="'"$badges_dir"'/light-'"$i"'.svg">'
+        echo -n '</picture>'
+
+        echo -n '</a>'
+
+        echo -n '&nbsp;'
+    done
+
+    echo
 }
 
 {
