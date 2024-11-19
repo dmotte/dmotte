@@ -51,7 +51,8 @@ for i in $(echo "$repos" | xargs); do
         emoji='&#x1F4C1;'
     fi
 
-    "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" > "$badges_dir/$i.svg"
+    bash "$MISC_SCRIPTS_DIR/generate-badge.sh" "$emoji" "$i" \
+        > "$badges_dir/$i.svg"
 done
 
 {
