@@ -63,31 +63,31 @@ done
     echo
     for i in "${repos_docker[@]}"; do
         echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ / \&nbsp; /g'
+    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
     echo
     echo '### Python'
     echo
     for i in "${repos_python[@]}"; do
         echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ / \&nbsp; /g'
+    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
     echo
     echo '### Rust'
     echo
     for i in "${repos_rust[@]}"; do
         echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ / \&nbsp; /g'
+    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
     echo
     echo '### Vagrant'
     echo
     for i in "${repos_vagrant[@]}"; do
         echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ / \&nbsp; /g'
+    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
     echo
     echo '### Others'
     echo
     for i in "${repos_others[@]}"; do
         echo "[![$i]($badges_dir/$i.svg)](https://github.com/$username/$i)"
-    done | xargs | sed 's/ / \&nbsp; /g'
+    done | xargs | sed 's/ /\&nbsp;\&nbsp;/g'
 } | tee "$readme_file"
 
 [ -z "$(git status -s)" ] || {
