@@ -62,8 +62,10 @@ generate_badges() {
         echo -n '<a href="'"https://github.com/$username/$i"'">'
 
         echo -n '<picture>'
-        echo -n '<source media="(prefers-color-scheme: dark)" srcset="'"$badges_dir/dark-$i.svg"'">'
-        echo -n '<source media="(prefers-color-scheme: light)" srcset="'"$badges_dir/light-$i.svg"'">'
+        echo -n '<source media="(prefers-color-scheme: dark)"' \
+            'srcset="'"$badges_dir/dark-$i.svg"'">'
+        echo -n '<source media="(prefers-color-scheme: light)"' \
+            'srcset="'"$badges_dir/light-$i.svg"'">'
         echo -n '<img alt="'"$i"'" src="'"$badges_dir/light-$i.svg"'">'
         echo -n '</picture>'
 
@@ -98,6 +100,9 @@ generate_badges() {
     echo '### Others'
     echo
     echo -n "$repos_others" | generate_badges
+    echo
+    echo '> **Note**: this content was **automatically generated** by a' \
+        '[**custom script**](https://github.com/dmotte/dmotte/blob/main/cicd.sh).'
 } | tee "$readme_file"
 
 [ -z "$(git status -s)" ] || {
