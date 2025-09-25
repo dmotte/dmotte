@@ -12,22 +12,10 @@ cd "$(dirname "$0")"
 readonly username=${1:?} repos_dir=${2:?} badges_dir=${3:?} readme_file=${4:?}
 readonly description=${5:-}
 
-repos=$(bash "$MISC_SCRIPTS_DIR/github-get-all-repos.sh" "users/$username" \
-    '.archived == false and .fork == false')
-repos=$(echo "$repos" | tr -d '\r' |
-    while read -r i; do echo "${i#"$username/"}"; done)
+GHBAK_CLONE_ARGS=--depth=1 bash "$MISC_SCRIPTS_DIR/github-bak-all-repos.sh" \
+    "users/$username" "$repos_dir"
 
-if [ ! -e "$repos_dir" ]; then
-    mkdir "$repos_dir"
-
-    (
-        cd "$repos_dir"
-
-        echo "$repos" | while read -r i; do
-            git clone --depth=1 "https://github.com/$username/$i.git"
-        done
-    )
-fi
+repos=$(find "$repos_dir" -mindepth 1 -maxdepth 1 -type d -printf '%P\n')
 
 repos_docker=
 repos_python=
