@@ -16,6 +16,7 @@ GHBAK_CLONE_ARGS=--depth=1 bash "$MISC_SCRIPTS_DIR/github-bak-all-repos.sh" \
     "users/$username" "$repos_dir"
 
 repos=$(find "$repos_dir" -mindepth 1 -maxdepth 1 -type d -printf '%P\n')
+repos=$(echo "$repos" | LC_ALL=C sort)
 
 repos_docker=
 repos_python=
