@@ -49,7 +49,7 @@ for i in $(echo "$repos" | xargs); do
 done
 
 generate_badges() {
-    while IFS= read -r i; do
+    while IFS= read -r i || [ -n "$i" ]; do
         echo -n '<a href="'"https://github.com/$username/$i"'">'
 
         echo -n '<picture>'
