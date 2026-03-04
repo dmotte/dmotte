@@ -49,7 +49,7 @@ for i in $(echo "$repos" | xargs); do
 done
 
 generate_badges() {
-    while IFS= read -r i || [ -n "$i" ]; do
+    while IFS= read -r i; do
         echo -n '<a href="'"https://github.com/$username/$i"'">'
 
         echo -n '<picture>'
@@ -64,6 +64,7 @@ generate_badges() {
 
         echo -n '&nbsp;'
     done
+    [ -z "$i" ] || { echo 'Unexpected EOF: missing newline' >&2; return 1; }
 
     echo
 }
@@ -74,23 +75,23 @@ generate_badges() {
     [ -n "$description" ] && { echo "$description"; echo; }
     echo '### Docker'
     echo
-    echo -n "$repos_docker" | generate_badges
+    printf '%s' "$repos_docker" | generate_badges
     echo
     echo '### Python'
     echo
-    echo -n "$repos_python" | generate_badges
+    printf '%s' "$repos_python" | generate_badges
     echo
     echo '### Rust'
     echo
-    echo -n "$repos_rust" | generate_badges
+    printf '%s' "$repos_rust" | generate_badges
     echo
     echo '### Vagrant'
     echo
-    echo -n "$repos_vagrant" | generate_badges
+    printf '%s' "$repos_vagrant" | generate_badges
     echo
     echo '### Others'
     echo
-    echo -n "$repos_others" | generate_badges
+    printf '%s' "$repos_others" | generate_badges
     echo
     echo '> **Note**: this content was **automatically generated** by a' \
         '[**custom script**](https://github.com/dmotte/dmotte/blob/main/cicd.sh).'
