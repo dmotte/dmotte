@@ -25,7 +25,7 @@ repos_vagrant=
 repos_others=
 
 for i in $(echo "$repos" | xargs); do
-    if [ -e "$repos_dir/$i/build/Dockerfile" ]; then
+    if [[ "$i" = docker-* ]] || [ -e "$repos_dir/$i/build/Dockerfile" ]; then
         repos_docker+="$i"$'\n'
         emoji='&#x1F40B;'
     elif [ -e "$repos_dir/$i/setup.py" ]; then
