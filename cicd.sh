@@ -22,6 +22,7 @@ repos_docker=
 repos_python=
 repos_rust=
 repos_vagrant=
+repos_web=
 repos_others=
 
 for i in $(echo "$repos" | xargs); do
@@ -37,6 +38,9 @@ for i in $(echo "$repos" | xargs); do
     elif [ -e "$repos_dir/$i/Vagrantfile" ]; then
         repos_vagrant+="$i"$'\n'
         emoji='&#x1F4E6;'
+    elif [ -e "$repos_dir/$i/Gemfile" ] && [ -e "$repos_dir/$i/_config.yml" ]; then
+        repos_web+="$i"$'\n'
+        emoji='&#x1F30D;'
     else
         repos_others+="$i"$'\n'
         emoji='&#x1F4C1;'
@@ -88,6 +92,10 @@ generate_badges() {
     echo '### Vagrant'
     echo
     printf '%s' "$repos_vagrant" | generate_badges
+    echo
+    echo '### Web'
+    echo
+    printf '%s' "$repos_web" | generate_badges
     echo
     echo '### Others'
     echo
